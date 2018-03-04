@@ -1,9 +1,14 @@
 package com.example.wang.alice;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,13 +19,16 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static int PERMISSION_RECORD_AUDIO = 7000;
+
     private Button speakBtn;
     private SpeechRecognizer mSpeechRecognizer;
     private boolean isListening;
     private Intent mSpeechRecognizerIntent;
+    private boolean isPermitRecordAudio;//permission to record audio
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         speakBtn = findViewById(R.id.speak_btn);
@@ -38,15 +46,27 @@ public class MainActivity extends AppCompatActivity {
         speakBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isListening = true;
-                if (isListening){
-                    Log.d("Speech", "Ready for Speech");
-                    mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                //check permission
+                if (!isPermitRecordAudio){
+                    checkAndRequestPermission();
+                }
+                //After ask for permission, if confirmed, start listening
+                if (isPermitRecordAudio){
+                    startListen();
                 }
             }
         });
     }
 
+    private void startListen(){
+        //start listening; change the button
+        isListening = true;
+        if (isListening){
+            Log.d("Speech", "Ready for Speech");
+            speakBtn.setText("Listening");
+            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+        }
+    }
 
     class SpeechRecognitionListener implements RecognitionListener {
 
@@ -72,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onEndOfSpeech() {
+            //at the end of speech, change button
             Log.d("Speech", "End Speech");
+            speakBtn.setText("Speech");
             isListening = false;
         }
 
@@ -83,9 +105,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onResults(Bundle results) {
+            //get result from results, and display result
             List<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            for (String s : result){
-                Log.d("Speech", s);
+            if(result != null){
+//                for (String s : result){
+//                    Log.d("Speech", s);
+//                }
+                Log.d("Speech", result.get(0));
+
             }
 
         }
@@ -103,9 +130,42 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        //override onDestroy, destroy speechRecognizer
         super.onDestroy();
         if (mSpeechRecognizer != null){
             mSpeechRecognizer.destroy();
+        }
+    }
+
+    private void checkAndRequestPermission(){
+        //check and ask for permission.
+        Log.d("permission", "checkAndRequestPermission");
+        //if permission is not granted, ask for permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED){
+
+            ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.RECORD_AUDIO},
+                            PERMISSION_RECORD_AUDIO);
+            Log.d("permission", "Ask for permission");
+        }else{ // if permission is granted, set isPermitRecordAudio true
+            isPermitRecordAudio = true;
+        }
+    }
+
+    // override onRequestPermissionResult
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        Log.d("permission", "Request result");
+        // According to requestCode to handle permission
+        switch (requestCode){
+            // permission is record audio
+            case PERMISSION_RECORD_AUDIO:
+                Log.d("permission", "Permission confirmed");
+                //set isPermitRecordAudio true
+                isPermitRecordAudio = true;
+                //startListen();
+                break;
         }
     }
 }
