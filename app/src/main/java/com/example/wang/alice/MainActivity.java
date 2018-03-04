@@ -1,6 +1,7 @@
 package com.example.wang.alice;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -191,4 +192,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+//    private View createStatueView(Activity activity, int color){
+//        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+//        int statusBarHeight = activity.getResources().getDimensionPixelSize(resourceId);
+//
+//        View statusView = new View(activity);
+//
+//    }
 }
