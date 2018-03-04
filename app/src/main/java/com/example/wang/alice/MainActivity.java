@@ -3,6 +3,7 @@ package com.example.wang.alice;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -11,8 +12,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import java.util.List;
@@ -22,16 +25,31 @@ public class MainActivity extends AppCompatActivity {
     private final static int PERMISSION_RECORD_AUDIO = 7000;
 
     private Button speakBtn;
+    private Toolbar mToolBar;
+
+
     private SpeechRecognizer mSpeechRecognizer;
     private boolean isListening;
     private Intent mSpeechRecognizerIntent;
     private boolean isPermitRecordAudio;//permission to record audio
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         speakBtn = findViewById(R.id.speak_btn);
+        mToolBar = findViewById(R.id.main_action_bar);
+        mToolBar.setTitle("");
+        setSupportActionBar(mToolBar);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            //translucent status
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            //translucent navigation
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
+        }
 
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
