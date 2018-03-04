@@ -1,9 +1,12 @@
 package com.example.wang.alice;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.WindowManager;
 
 public class SplashScreen extends AppCompatActivity {
@@ -25,10 +28,25 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run(){
                 try {
-                    sleep(3000);
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    //editor.clear().apply();
+
+                    boolean activityExecuted = pref.getBoolean("activity_executed", false);
+                    Log.d("pref", activityExecuted+"");
+                    if (activityExecuted){
+                        sleep(3000);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else{
+
+                        sleep(3000);
+                        Intent intent = new Intent(getApplicationContext(), NeedActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
                 }
                 catch (InterruptedException e) {
                     e.printStackTrace();
