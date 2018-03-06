@@ -11,10 +11,20 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
+import com.example.wang.alice.RecyclerViewUtil.MessageAdapter;
+import com.example.wang.alice.RecyclerViewUtil.SpaceItemDecoration;
+import com.example.wang.alice.mode.Message;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,6 +33,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     private Button speakBtn;
+    private RecyclerView mRecyclerView;
+
+    private MessageAdapter mAdapter;
+    private List<Message> messageList;
+
+
     private SpeechRecognizer mSpeechRecognizer;
     private boolean isListening;
     private Intent mSpeechRecognizerIntent;
@@ -35,8 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         speakBtn = findViewById(R.id.speak_btn);
+        mRecyclerView = findViewById(R.id.message_rv);
+
+        //initial left message
+        initialMessageRecyclerView();
 
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -65,11 +84,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void startListen(){
         //start listening; change the button
-        isListening = true;
-        if (isListening){
+        if (!isListening){
             Log.d("Speech", "Ready for Speech");
-            speakBtn.setText("Listening");
+            Animation scale = AnimationUtils.loadAnimation(this, R.anim.scale);
+            speakBtn.startAnimation(scale);
+            //speakBtn.setText("Listening");
+            isListening = true;
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+        } else{
+            mSpeechRecognizer.stopListening();
+            speakBtn.clearAnimation();
+            isListening = false;
         }
     }
 
@@ -99,7 +124,8 @@ public class MainActivity extends AppCompatActivity {
         public void onEndOfSpeech() {
             //at the end of speech, change button
             Log.d("Speech", "End Speech");
-            speakBtn.setText("Speech");
+            //speakBtn.setText("Speech");
+            speakBtn.clearAnimation();
             isListening = false;
         }
 
@@ -117,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
 //                    Log.d("Speech", s);
 //                }
                 Log.d("Speech", result.get(0));
-
+                messageList.add(new Message(result.get(0), Message.RIGHT_MESSAGE));
+                mAdapter.notifyDataSetChanged();
             }
 
         }
@@ -172,5 +199,15 @@ public class MainActivity extends AppCompatActivity {
                 //startListen();
                 break;
         }
+    }
+
+    private void initialMessageRecyclerView(){
+        messageList = new ArrayList<>();
+        messageList.add(new Message("What can I help you? ", Message.LEFT_MESSAGE));
+        messageList.add(new Message("Direction to Santa Clara University", Message.RIGHT_MESSAGE));
+        mAdapter = new MessageAdapter(LayoutInflater.from(this), messageList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.addItemDecoration(new SpaceItemDecoration(50));
+        mRecyclerView.setAdapter(mAdapter);
     }
 }
