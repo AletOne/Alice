@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,25 +25,36 @@ import com.example.wang.alice.RecyclerViewUtil.MessageAdapter;
 import com.example.wang.alice.RecyclerViewUtil.SpaceItemDecoration;
 import com.example.wang.alice.mode.Message;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
 
     private final static int PERMISSION_RECORD_AUDIO = 7000;
 
 
+    //UI components
     private Button speakBtn;
     private RecyclerView mRecyclerView;
 
+    //RecyclerView Adapter and Data
     private MessageAdapter mAdapter;
     private List<Message> messageList;
 
 
+    //Speech Recognizer
     private SpeechRecognizer mSpeechRecognizer;
     private boolean isListening;
     private Intent mSpeechRecognizerIntent;
     private boolean isPermitRecordAudio;//permission to record audio
+
+
+    //Text to Speech
+    private TextToSpeech aliceSpeech;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -54,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
         speakBtn = findViewById(R.id.speak_btn);
         mRecyclerView = findViewById(R.id.message_rv);
 
-        //initial left message
-        initialMessageRecyclerView();
 
+
+        //Initial SpeechRecognizer
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -66,6 +78,11 @@ public class MainActivity extends AppCompatActivity {
 
         SpeechRecognitionListener listener = new SpeechRecognitionListener();
         mSpeechRecognizer.setRecognitionListener(listener);
+
+        //Initial Text to Speech
+        aliceSpeech = new TextToSpeech(this, this);
+        //initial left message
+        initialMessageRecyclerView();
 
         speakBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,6 +112,23 @@ public class MainActivity extends AppCompatActivity {
             mSpeechRecognizer.stopListening();
             speakBtn.clearAnimation();
             isListening = false;
+        }
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS){
+            int result = aliceSpeech.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA ||
+                    result == TextToSpeech.LANG_NOT_SUPPORTED){
+                Log.e("error", "This language is not support");
+            }else{
+                aliceSpeech.speak("What can I help you?", TextToSpeech.QUEUE_FLUSH, null, "111111");
+
+                //Log.d("speak", result+ "");
+            }
+        }else{
+            Log.e("error", "Initialed Failed");
         }
     }
 
@@ -142,9 +176,17 @@ public class MainActivity extends AppCompatActivity {
 //                for (String s : result){
 //                    Log.d("Speech", s);
 //                }
-                Log.d("Speech", result.get(0));
-                messageList.add(new Message(result.get(0), Message.RIGHT_MESSAGE));
-                mAdapter.notifyDataSetChanged();
+
+                String text = result.get(0);
+                Log.d("Speech", text);
+                if (!text.equals("")){
+                    int count = messageList.size();
+                    messageList.add(new Message(text, Message.RIGHT_MESSAGE));
+                    mAdapter.notifyItemInserted(count);
+                    mRecyclerView.scrollToPosition(count);
+                    aliceSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "111111");
+                }
+
             }
 
         }
@@ -204,10 +246,10 @@ public class MainActivity extends AppCompatActivity {
     private void initialMessageRecyclerView(){
         messageList = new ArrayList<>();
         messageList.add(new Message("What can I help you? ", Message.LEFT_MESSAGE));
-        messageList.add(new Message("Direction to Santa Clara University", Message.RIGHT_MESSAGE));
         mAdapter = new MessageAdapter(LayoutInflater.from(this), messageList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new SpaceItemDecoration(50));
         mRecyclerView.setAdapter(mAdapter);
+
     }
 }
