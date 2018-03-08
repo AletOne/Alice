@@ -23,6 +23,7 @@ import android.widget.Button;
 
 import com.example.wang.alice.RecyclerViewUtil.MessageAdapter;
 import com.example.wang.alice.RecyclerViewUtil.SpaceItemDecoration;
+import com.example.wang.alice.TTS.AliceSpeech;
 import com.example.wang.alice.mode.Message;
 
 import org.w3c.dom.Text;
@@ -31,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class MainActivity extends AppCompatActivity {
 
     private final static int PERMISSION_RECORD_AUDIO = 7000;
 
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
 
 
     //Text to Speech
-    private TextToSpeech aliceSpeech;
+    private AliceSpeech aliceSpeech;
 
 
     @Override
@@ -79,10 +80,14 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         SpeechRecognitionListener listener = new SpeechRecognitionListener();
         mSpeechRecognizer.setRecognitionListener(listener);
 
-        //Initial Text to Speech
-        aliceSpeech = new TextToSpeech(this, this);
+
+
         //initial left message
         initialMessageRecyclerView();
+        //Initial Text to Speech
+        aliceSpeech = AliceSpeech.GenerateSpeech(this, "What can I help you?");
+
+        //Initial Apex NLP
 
         speakBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,22 +120,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS){
-            int result = aliceSpeech.setLanguage(Locale.US);
-            if (result == TextToSpeech.LANG_MISSING_DATA ||
-                    result == TextToSpeech.LANG_NOT_SUPPORTED){
-                Log.e("error", "This language is not support");
-            }else{
-                aliceSpeech.speak("What can I help you?", TextToSpeech.QUEUE_FLUSH, null, "111111");
-
-                //Log.d("speak", result+ "");
-            }
-        }else{
-            Log.e("error", "Initialed Failed");
-        }
-    }
 
     class SpeechRecognitionListener implements RecognitionListener {
 
@@ -184,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     messageList.add(new Message(text, Message.RIGHT_MESSAGE));
                     mAdapter.notifyItemInserted(count);
                     mRecyclerView.scrollToPosition(count);
-                    aliceSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "111111");
+                    aliceSpeech.speak(text, "111111");
                 }
 
             }
@@ -252,4 +241,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         mRecyclerView.setAdapter(mAdapter);
 
     }
+
+
+    
 }
