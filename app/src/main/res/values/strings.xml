@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Alice</string>
+    <string name="open_weather_maps_app_id">544374505bccb4ca82c94aa17ca2c9df</string>
 </resources>
