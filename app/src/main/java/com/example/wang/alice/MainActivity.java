@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -122,12 +123,20 @@ public class MainActivity extends AppCompatActivity {
         //initial left message
         initialMessageRecyclerView();
         //Initial Text to Speech
-        aliceSpeech = AliceSpeech.GenerateSpeech(this, "What can I help you?");
+        SharedPreferences preferences = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        String userName = preferences.getString("name", "Master");
+        aliceSpeech = AliceSpeech.GenerateSpeech(this, userName + ", What can I help you?");
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 // do something
-                startListen();
+                if (!isPermitRecordAudio){
+                    checkAndRequestPermission();
+                }
+                //After ask for permission, if confirmed, start listening
+                if (isPermitRecordAudio){
+                    startListen();
+                }
             }
 
         }, 1000);

@@ -25,7 +25,7 @@ public class AliceSpeech {
         }
     }
 
-    private AliceSpeech(Context context, String text){
+    private AliceSpeech(Context context, final String text){
         textToSpeech = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -35,7 +35,7 @@ public class AliceSpeech {
                             result == TextToSpeech.LANG_NOT_SUPPORTED){
                         Log.e("error", "This language is not support");
                     }else{
-                        speak("What can I help you?", "111111");
+                        speak(text, "111111");
 
                         //Log.d("speak", result+ "");
                     }
@@ -49,5 +49,15 @@ public class AliceSpeech {
     public int speak(String text, String utteranceId){
         return textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
     }
+
+    public void destroySpeech(){
+        if (textToSpeech != null){
+            textToSpeech.stop();
+            textToSpeech.shutdown();
+        }
+
+    }
+
+
 
 }

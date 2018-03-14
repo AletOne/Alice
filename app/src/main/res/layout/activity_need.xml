@@ -1,13 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.wang.alice.NeedActivity">
+    tools:context="com.example.wang.alice.NeedActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="60dp">
+            <ImageView
+                android:id="@+id/alice_image"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                app:srcCompat="@mipmap/ic_launcher"/>
+            <TextView
+                android:id="@+id/message_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/left_text_style"
+                android:text="Hello, how may I call you?"
+                />
+        </LinearLayout>
+
+        <EditText
+            android:layout_marginEnd="16dp"
+            android:id="@+id/edit_name"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="center"
+            tools:text = "Kenny"/>
+
+
+        <LinearLayout
+            android:id="@+id/final_l"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="60dp"
+            android:paddingTop="16dp">
+            <ImageView
+                android:id="@+id/alice_image_1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                app:srcCompat="@mipmap/ic_launcher"/>
+            <TextView
+                android:id="@+id/message_tv_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/left_text_style"
+                tools:text="Hello, Kenny. My name is Alice. I'm your personal virtual assistant."
+                />
+        </LinearLayout>
+    </LinearLayout>
 
 
     <Button
+        android:visibility="visible"
         android:id="@+id/button"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
@@ -18,9 +80,6 @@
         android:onClick="startMain"
         android:background="@color/colorPrimaryDark"
         android:textColor="@color/white"
-        android:text="Let's Go !"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"/>
-</android.support.constraint.ConstraintLayout>
+        android:text="Submit"
+        android:layout_gravity="center|bottom"/>
+</LinearLayout>
