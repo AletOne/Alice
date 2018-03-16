@@ -34,6 +34,7 @@ public class TextToCommand {
         map.put("direction", DIR);
         map.put("directions", DIR);
         map.put("navigation", DIR);
+        map.put("navigations", DIR);
         map.put("where", MAP);
         map.put("location", MAP);
         map.put("weather", WEATHER);

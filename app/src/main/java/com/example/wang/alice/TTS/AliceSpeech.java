@@ -52,10 +52,15 @@ public class AliceSpeech {
 
     public void destroySpeech(){
         if (textToSpeech != null){
-            textToSpeech.stop();
             textToSpeech.shutdown();
         }
 
+    }
+
+    public void stop(){
+        if (textToSpeech != null){
+            textToSpeech.stop();
+        }
     }
 
 

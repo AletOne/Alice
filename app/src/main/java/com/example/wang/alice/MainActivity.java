@@ -22,13 +22,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.example.wang.alice.RecyclerViewUtil.MessageAdapter;
 import com.example.wang.alice.RecyclerViewUtil.SpaceItemDecoration;
@@ -103,6 +108,12 @@ public class MainActivity extends AppCompatActivity {
     //SMS util variable
     private String number;
 
+
+    //toorbar
+    private Toolbar toolbar;
+
+    private ImageView groupImage;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,31 +123,49 @@ public class MainActivity extends AppCompatActivity {
 
         speakBtn = findViewById(R.id.speak_btn);
         mRecyclerView = findViewById(R.id.message_rv);
+        toolbar = findViewById(R.id.alice_toolbar);
+
+        toolbar.inflateMenu(R.menu.menu);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int id = item.getItemId();
+                if (id == R.id.action_setting){
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                }
+                return true;
+            }
+        });
 
 
+
+        groupImage = findViewById(R.id.group_image);
 
         //Initial SpeechRecognizer
         initialSpeechRecognizer();
 
 
 
+
+
         //initial left message
         initialMessageRecyclerView();
         //Initial Text to Speech
+
         SharedPreferences preferences = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
         String userName = preferences.getString("name", "Master");
-        aliceSpeech = AliceSpeech.GenerateSpeech(this, userName + ", What can I help you?");
+        aliceSpeech = AliceSpeech.GenerateSpeech(this, "" + userName + ", What can I help you?");
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 // do something
-                if (!isPermitRecordAudio){
-                    checkAndRequestPermission();
-                }
+                //if (!isPermitRecordAudio){
+                //    checkAndRequestPermission();
+                //}
                 //After ask for permission, if confirmed, start listening
-                if (isPermitRecordAudio){
+                //if (isPermitRecordAudio){
                     startListen();
-                }
+                //}
             }
 
         }, 1000);
@@ -151,18 +180,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //check permission
-                if (!isPermitRecordAudio){
-                    checkAndRequestPermission();
-                }
+//                if (!isPermitRecordAudio){
+//                    checkAndRequestPermission();
+//                }
                 //After ask for permission, if confirmed, start listening
-                if (isPermitRecordAudio){
+                //if (isPermitRecordAudio){
                     startListen();
-                }
+                //}
             }
         });
 
 
     }
+
 
     private void startListen(){
         //start listening; change the button
@@ -170,12 +200,24 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Speech", "Ready for listening");
             Animation scale = AnimationUtils.loadAnimation(this, R.anim.scale);
             speakBtn.startAnimation(scale);
+
+            Animation rotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
+            LinearInterpolator interpolator = new LinearInterpolator();
+            rotate.setInterpolator(interpolator);
+            if (rotate != null){
+                groupImage.startAnimation(rotate);
+            }
             //speakBtn.setText("Listening");
+
             isListening = true;
 
+            if(mSpeechRecognizer == null){
+                initialSpeechRecognizer();
+            }
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
         } else{
             mSpeechRecognizer.stopListening();
+            groupImage.clearAnimation();
             speakBtn.clearAnimation();
             isListening = false;
         }
@@ -210,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Speech", "End Speech");
             //speakBtn.setText("Speech");
             speakBtn.clearAnimation();
+            groupImage.clearAnimation();
             isListening = false;
         }
 
@@ -326,7 +369,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initialMessageRecyclerView(){
         messageList = new ArrayList<>();
-        messageList.add(new Message("What can I help you? ", Message.LEFT_MESSAGE));
+        SharedPreferences preferences = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        String userName = preferences.getString("name", "Master");
+        messageList.add(new Message("" + userName + ", What can I help you?", Message.LEFT_MESSAGE));
         mAdapter = new MessageAdapter(LayoutInflater.from(this), messageList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.addItemDecoration(new SpaceItemDecoration(50));

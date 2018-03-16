@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sample="http://schemas.android.com/apk/res-auto"
+
+    xmlns:coomix="urn:oasis:names:tc:xliff:document:1.2">
+
+    <PreferenceCategory
+        android:title="SYSTEM">
+
+        <SwitchPreference
+            android:key="wake_up"
+            android:title="Use Wake up Phrase"
+            android:defaultValue="false">
+
+        </SwitchPreference>
+
+        <SwitchPreference
+            android:key="speak_back"
+            android:title="Speak Back Response"
+            android:defaultValue="true"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="speech_speed"
+            android:title="Speech Speed"
+            android:defaultValue="50"
+
+            sample:msbp_minValue="0"
+            sample:msbp_maxValue="100"
+            sample:msbp_measurementUnit="%"
+            sample:msbp_dialogEnabled="false"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="APPLICATIONS">
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="weather"
+            android:title="Weather" >
+        </Preference>
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="call"
+            android:title="Phone Call" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="text"
+            android:title="Text Message" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="map"
+            android:title="Maps" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="reminder"
+            android:title="Reminder" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="notes"
+            android:title="Notes" />
+
+        <Preference
+            android:selectable="true"
+            android:enabled="true"
+            android:key="uber"
+            android:title="Uber" />
+
+
+
+    </PreferenceCategory>
+
+
+
+
+</PreferenceScreen>
