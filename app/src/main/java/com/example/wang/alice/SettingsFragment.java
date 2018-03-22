@@ -58,29 +58,29 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     @Override
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
-        Intent intent = new Intent(getActivity(), DetailActivity.class);
         switch (key){
             case WEATHER_KEY:
-                intent.putExtra("key", WEATHER_KEY);
+                Intent weatherIntent = new Intent(getActivity(), WeatherActivity.class);
+                startActivity(weatherIntent);
                 break;
             case CALL_KEY:
-                intent.putExtra("key", CALL_KEY);
+                Intent callIntent = new Intent(getActivity(), WeatherActivity.class);
+                startActivity(callIntent);
                 break;
             case TEXT_KEY:
-                intent.putExtra("key", TEXT_KEY);
+                Intent textIntent = new Intent(getActivity(), WeatherActivity.class);
+                startActivity(textIntent);
                 break;
             case REMIDER_KEY:
-                intent.putExtra("key", REMIDER_KEY);
+
                 break;
             case NOTES_KEY:
-                intent.putExtra("key", NOTES_KEY);
                 break;
             case UBER_KEY:
-                intent.putExtra("key", UBER_KEY);
                 break;
         }
 
-        startActivity(intent);
-        return false;
+//        startActivity(intent);
+        return true;
     }
 }
